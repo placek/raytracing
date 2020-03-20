@@ -13,7 +13,7 @@ instance (Num a) => Semigroup (Vector a) where
   (Vector a b c) <> (Vector d e f) = Vector (a + d) (b + e) (c + f)
 
 instance (Num a) => Monoid (Vector a) where
-  mempty = Vector (fromInteger 0) (fromInteger 0) (fromInteger 0)
+  mempty = Vector 0 0 0
 
 instance (Num a) => Group (Vector a) where
   invert (Vector a b c) = Vector (-a) (-b) (-c)
@@ -29,7 +29,7 @@ a |+| b = a <> b
 
 -- | Vectors substraction.
 (|-|) :: (Num a) => Vector a -> Vector a -> Vector a
-a |-| b = a <> (invert b)
+a |-| b = a <> invert b
 
 -- | Multiplication by scalar.
 (|*) :: (Num a) => Vector a -> a -> Vector a
@@ -44,15 +44,15 @@ v |* a = fmap (*a) v
 v |/ a = fmap (/a) v
 
 -- | Dot product.
-dot :: (Num a) => (Vector a) -> (Vector a) -> a
+dot :: (Num a) => Vector a -> Vector a -> a
 dot (Vector a b c) (Vector d e f) = a * d + b * e + c * f
 
 -- | Cross product.
-cross :: (Num a) => (Vector a) -> (Vector a) -> (Vector a)
+cross :: (Num a) => Vector a -> Vector a -> Vector a
 cross (Vector a b c) (Vector d e f) = Vector (b * f - c * e) (c * d - a * f) (a * e - b * d)
 
 -- | Magnitude. The length of the vector.
-magnitude :: (Floating a) => (Vector a) -> a
+magnitude :: (Floating a) => Vector a -> a
 magnitude a = sqrt $ dot a a
 
 class Norm a where
@@ -61,4 +61,4 @@ class Norm a where
 instance (Floating a) => Norm (Vector a) where
   -- | Normalize vector.
   -- All vectors components are divided by its magnitude.
-  norm v = v |/ (magnitude v)
+  norm v = v |/ magnitude v

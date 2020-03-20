@@ -36,7 +36,7 @@ instance Intersect Plane where
             where (Line a b)  = norm ray
                   (Plane c d) = norm plane
                   s           = dot b d
-                  t           = (dot (c |-| a) d) / s
+                  t           = dot (c |-| a) d / s
 
 instance Intersect Triangle where
 -- | Intersection of ray and triangle.
@@ -53,7 +53,7 @@ instance Intersect Triangle where
                   edge2      = c |-| a
                   h          = cross d edge2
                   _a         = dot h edge1
-                  u          = (dot (s |-| a) h) / _a
+                  u          = dot (s |-| a) h / _a
                   q          = cross (s |-| a) edge1
-                  v          = (dot d q) / _a
-                  t          = (dot edge2 q) / _a
+                  v          = dot d q / _a
+                  t          = dot edge2 q / _a

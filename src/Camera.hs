@@ -14,7 +14,7 @@ size :: (Num a) => Screen a -> a
 size (Screen w h) = w * h
 
 instance (Show a) => Show (Screen a) where
-  show (Screen w h) = (show w) ++ "x" ++ (show h)
+  show (Screen w h) = show w ++ "x" ++ show h
 
 -- | List of points the camera has to put the ray through.
 targetPoints :: (Floating a, Enum a) => Camera a -> [Vector a]
@@ -31,4 +31,4 @@ rays :: (Floating a, Enum a) => Camera a -> [Line a]
 rays camera@(Camera s _ _) = fmap (\t -> Line s (t |-| s)) (targetPoints camera)
 
 hits :: (Intersect f, Floating a, Enum a, Ord a) => Camera a -> [f a] -> [Maybe (Vector a)]
-hits camera geometries = concat $ fmap (\x -> intersections x (rays camera)) geometries
+hits camera = concatMap (\x -> intersections x (rays camera))
