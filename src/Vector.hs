@@ -3,7 +3,14 @@ module Vector where
 import Data.Monoid
 import Data.Group
 
+-- | Vector. Three dimensional structure with @_x@, @_y@ and @_z@ as components.
 data Vector a = Vector { _x :: a, _y :: a, _z :: a } deriving (Eq, Show)
+
+-- | Line. First argument is some point on the line. Second argument is a direction vector of the line.
+data Line a = Line (Vector a) (Vector a) deriving (Eq, Show)
+
+-- | Plane. First argument is some point on the plane. Second argument is the vector orthogonal to the plane.
+data Plane a = Plane (Vector a) (Vector a) deriving (Eq, Show)
 
 instance Functor Vector where
   fmap f (Vector a b c) = Vector (f a) (f b) (f c)
@@ -61,3 +68,23 @@ instance (Floating a) => Norm (Vector a) where
   -- | Normalize vector.
   -- All vectors components are divided by its magnitude.
   norm v = v |/ (magnitude v)
+
+instance (Floating a) => Norm (Line a) where
+  -- | Normalize line.
+  -- Directional vector is normalized..
+  norm (Line s d) = Line s (norm d)
+
+instance (Floating a) => Norm (Plane a) where
+  -- | Normalize plane.
+  -- Normal vector is normalized..
+  norm (Plane s d) = Plane s (norm d)
+
+-- | Intersection of line and plane.
+intersect :: (Floating a, Eq a) => Line a -> Plane a -> Maybe (Vector a)
+intersect line plane
+          | s == 0    = Nothing
+          | otherwise = Just $ a |+| b |* t
+          where (Line a b)  = norm line
+                (Plane c d) = norm plane
+                s           = dot b d
+                t           = (dot (c |-| a) d) / s
