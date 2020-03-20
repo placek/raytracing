@@ -30,5 +30,25 @@ targetPoints (Camera s d (Screen width height)) = fmap (|+| middlepoint) coords
 rays :: (Floating a, Enum a) => Camera a -> [Line a]
 rays camera@(Camera s _ _) = fmap (\t -> Line s (t |-| s)) (targetPoints camera)
 
+-- | List of maybe hited points on geometries.
 hits :: (Intersect f, Floating a, Enum a, Ord a) => Camera a -> [f a] -> [Maybe (Vector a)]
 hits camera = concatMap (\x -> intersections x (rays camera))
+
+-- | PBM structure.
+data PBM a = PBM a a [Maybe (Vector a)]
+
+-- | Conversion of data to PBM values.
+toPbmString :: [Maybe (Vector a)] -> String
+toPbmString = concatMap toPixel
+  where toPixel = maybe "0 " (const "1 ")
+
+instance (Show a) => Show (PBM a) where
+  show (PBM w h hs) = unlines $ [header, size] ++ pbmData
+    where header  = "P1"
+          size    = show w ++ " " ++ show h
+          pbmData = slice 70 (toPbmString hs)
+          slice n = takeWhile (not.null) . map (take n) . iterate (drop n)
+
+-- | Render scene basing on geometries and the camera.
+render :: (Intersect f, Floating a, Enum a, Ord a, Show a) => Camera a -> [f a] -> String
+render camera@(Camera _ _ (Screen w h)) gs = show $ PBM w h (hits camera gs)
