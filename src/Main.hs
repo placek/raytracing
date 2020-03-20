@@ -1,6 +1,6 @@
 module Main where
 
-import Raytracing
+import Vector
 
 main :: IO ()
-main = putStrLn test
+main = putStrLn (show $ Vector 1 2 3)
