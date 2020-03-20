@@ -22,10 +22,10 @@ instance (Floating a) => Norm (Plane a) where
   norm (Plane s d) = Plane s (norm d)
 
 class Intersect f where
-  intersection  :: (Floating a, Eq a, Ord a) => f a -> (Line a) -> Maybe (Vector a)
-  intersections :: (Floating a, Eq a, Ord a) => f a -> [Line a] -> Maybe [(Vector a)]
+  intersection  :: (Floating a, Eq a, Ord a) => f a ->  Line a  -> Maybe (Vector a)
+  intersections :: (Floating a, Eq a, Ord a) => f a -> [Line a] -> [Maybe (Vector a)]
 
-  intersections geometry rays = sequenceA $ filter (maybe False (\_ -> True)) (fmap (intersection geometry) rays)
+  intersections geometry = fmap (intersection geometry)
 
 instance Intersect Plane where
 -- | Intersection of ray and plane.
