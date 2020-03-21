@@ -14,7 +14,7 @@ extra-source-files:  CHANGELOG.md
 
 executable raytracing
   main-is:             Main.hs
-  other-modules:       Vector
+  other-modules:       Camera, Geometry, Vector
   build-depends:       base >=4.12 && <4.13
                      , groups
   hs-source-dirs:      src
