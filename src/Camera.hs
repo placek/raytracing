@@ -24,7 +24,8 @@ targetPoints (Camera s d (Screen width height)) = fmap (|+| middlepoint) coords
         up          = norm $ cross d left
         step        = 2.0 / width
         hX          = height * step
-        coords      = [left |* (1.0 - x) |+| up |* (hX / 2.0 - y) | x <- [0.0, step..2.0 - step], y <- [0.0, step..hX - step]]
+        coords      = [left |* (1.0 - x) |+| up |* (hX / 2.0 - y) | y <- [0.0, step..hX - step]
+                                                                  , x <- [0.0, step..2.0 - step]]
 
 -- | List of rays the camera is casting.
 rays :: (Floating a, Enum a) => Camera a -> [Line a]
@@ -45,7 +46,7 @@ toPbmString = concatMap toPixel
 instance (Show a) => Show (PBM a) where
   show (PBM w h hs) = unlines $ [header, size] ++ pbmData
     where header  = "P1"
-          size    = show w ++ " " ++ show h
+          size    = takeWhile (/= '.') (show w) ++ " " ++ takeWhile (/= '.') (show h)
           pbmData = slice 70 (toPbmString hs)
           slice n = takeWhile (not.null) . map (take n) . iterate (drop n)
 

@@ -28,7 +28,7 @@ class Intersect f where
   intersections geometry = fmap (intersection geometry)
 
 instance Intersect Plane where
--- | Intersection of ray and plane.
+  -- | Intersection of ray and plane.
   intersection plane ray
             | s == 0    = Nothing
             | t > 0     = Just $ a |+| b |* t
@@ -39,7 +39,7 @@ instance Intersect Plane where
                   t           = dot (c |-| a) d / s
 
 instance Intersect Triangle where
--- | Intersection of ray and triangle.
+  -- | Intersection of ray and triangle.
   intersection (Triangle a b c) ray
             | _a == 0   = Nothing
             | u < 0     = Nothing
