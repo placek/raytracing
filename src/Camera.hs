@@ -1,5 +1,6 @@
 module Camera where
 
+import Data.Maybe
 import Vector
 import Geometry
 
@@ -32,18 +33,19 @@ rays :: (Floating a, Enum a) => Camera a -> [Line a]
 rays camera@(Camera s _ _) = fmap (\t -> Line s (t |-| s)) (targetPoints camera)
 
 -- | List of maybe hited points on geometries.
-hits :: (Intersect f, Floating a, Enum a, Ord a) => Camera a -> [f a] -> [Maybe (Vector a)]
-hits camera = concatMap (\x -> intersections x (rays camera))
+hits :: (Intersect f, Floating a, Enum a, Ord a) => Camera a -> [f a] -> [[(f a, Vector a)]]
+hits camera gs = fmap (\r -> intersections r gs) (rays camera)
 
 -- | PBM structure.
-data PBM a = PBM a a [Maybe (Vector a)]
+data PBM a b = PBM a a [[b]]
 
 -- | Conversion of data to PBM values.
-toPbmString :: [Maybe (Vector a)] -> String
+toPbmString :: [[a]] -> String
 toPbmString = concatMap toPixel
-  where toPixel = maybe "0 " (const "1 ")
+  where toPixel [] = "0 "
+        toPixel _  = "1 "
 
-instance (Show a) => Show (PBM a) where
+instance (Show a) => Show (PBM a b) where
   show (PBM w h hs) = unlines $ [header, size] ++ pbmData
     where header  = "P1"
           size    = takeWhile (/= '.') (show w) ++ " " ++ takeWhile (/= '.') (show h)

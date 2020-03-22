@@ -1,5 +1,6 @@
 module Geometry where
 
+import Data.Maybe
 import Vector
 
 -- | Line. First argument is some point on the line. Second argument is a direction vector of the line.
@@ -21,18 +22,24 @@ instance (Floating a) => Norm (Plane a) where
   -- Normal vector is normalized..
   norm (Plane s d) = Plane s (norm d)
 
-class Intersect f where
-  intersection  :: (Floating a, Eq a, Ord a) => f a ->  Line a  -> Maybe (Vector a)
-  intersections :: (Floating a, Eq a, Ord a) => f a -> [Line a] -> [Maybe (Vector a)]
+data Intersection f a = Inter { getInter :: Maybe (f a, Vector a) }
 
-  intersections geometry = fmap (intersection geometry)
+
+class Intersect f where
+  intersection  :: (Floating a, Eq a, Ord a) => Line a ->  f a  -> Intersection f a
+  intersections :: (Floating a, Eq a, Ord a) => Line a -> [f a] -> [(f a, Vector a)]
+
+  intersections ray gs = concatMap toA traces
+    where traces                  = fmap (intersection ray) gs
+          toA (Inter (Just a))    = [a]
+          toA (Inter Nothing)     = []
 
 instance Intersect Plane where
   -- | Intersection of ray and plane.
-  intersection plane ray
-            | s == 0    = Nothing
-            | t > 0     = Just $ a |+| b |* t
-            | otherwise = Nothing
+  intersection ray plane
+            | s == 0    = Inter Nothing
+            | t > 0     = Inter $ Just (plane, a |+| b |* t)
+            | otherwise = Inter Nothing
             where (Line a b)  = norm ray
                   (Plane c d) = norm plane
                   s           = dot b d
@@ -40,14 +47,14 @@ instance Intersect Plane where
 
 instance Intersect Triangle where
   -- | Intersection of ray and triangle.
-  intersection (Triangle a b c) ray
-            | _a == 0   = Nothing
-            | u < 0     = Nothing
-            | u > 1     = Nothing
-            | v < 0     = Nothing
-            | u + v > 1 = Nothing
-            | t > 0     = Just $ s |+| d |* t
-            | otherwise = Nothing
+  intersection ray triangle@(Triangle a b c)
+            | _a == 0   = Inter Nothing
+            | u < 0     = Inter Nothing
+            | u > 1     = Inter Nothing
+            | v < 0     = Inter Nothing
+            | u + v > 1 = Inter Nothing
+            | t > 0     = Inter $ Just (triangle, s |+| d |* t)
+            | otherwise = Inter Nothing
             where (Line s d) = norm ray
                   edge1      = b |-| a
                   edge2      = c |-| a
