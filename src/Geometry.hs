@@ -24,15 +24,14 @@ instance (Floating a) => Norm (Plane a) where
 
 data Intersection f a = Inter { getInter :: Maybe (f a, Vector a) }
 
-
 class Intersect f where
   intersection  :: (Floating a, Eq a, Ord a) => Line a ->  f a  -> Intersection f a
   intersections :: (Floating a, Eq a, Ord a) => Line a -> [f a] -> [(f a, Vector a)]
 
   intersections ray gs = concatMap toA traces
-    where traces                  = fmap (intersection ray) gs
-          toA (Inter (Just a))    = [a]
-          toA (Inter Nothing)     = []
+    where traces               = fmap (intersection ray) gs
+          toA (Inter (Just a)) = [a]
+          toA (Inter Nothing)  = []
 
 instance Intersect Plane where
   -- | Intersection of ray and plane.
