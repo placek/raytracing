@@ -5,8 +5,7 @@ import Text.Parsec.Char
 import Geometry
 import Vector
 
-unwrap (Right (STL _ f)) = fmap coerce f
-coerce (Facet _ ((Vertex a b c), (Vertex d e f), (Vertex g h i))) = Triangle (Vector (_n a) (_n b) (_n c)) (Vector (_n d) (_n e) (_n f)) (Vector (_n g) (_n h) (_n i))
+stlCoerce (Facet _ ((Vertex a b c), (Vertex d e f), (Vertex g h i))) = Triangle (Vector (_n a) (_n b) (_n c)) (Vector (_n d) (_n e) (_n f)) (Vector (_n g) (_n h) (_n i))
 
 data Name   = Name String deriving (Show)
 data Number = Number { _n :: Double } deriving (Show)
@@ -91,5 +90,6 @@ parseSTL = do
              n <- parseName
              newLine
              fs <- manyTill parseFacet (string "endsolid")
+             many endOfLine
              eof
              return $ STL n fs
