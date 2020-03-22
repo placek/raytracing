@@ -55,6 +55,10 @@ cross (Vector a b c) (Vector d e f) = Vector (b * f - c * e) (c * d - a * f) (a 
 magnitude :: (Floating a) => Vector a -> a
 magnitude a = sqrt $ dot a a
 
+-- | Distance.
+distance :: (Floating a) => Vector a -> Vector a -> a
+distance a b = magnitude $ a |-| b
+
 class Norm a where
   norm :: a -> a
 

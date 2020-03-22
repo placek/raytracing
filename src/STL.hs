@@ -5,14 +5,14 @@ import Text.Parsec.Char
 import Geometry
 import Vector
 
-stlCoerce (Facet _ ((Vertex a b c), (Vertex d e f), (Vertex g h i))) = Triangle (Vector (_n a) (_n b) (_n c)) (Vector (_n d) (_n e) (_n f)) (Vector (_n g) (_n h) (_n i))
+stlCoerce (Facet _ (Vertex a b c, Vertex d e f, Vertex g h i)) = Triangle (Vector (_n a) (_n b) (_n c)) (Vector (_n d) (_n e) (_n f)) (Vector (_n g) (_n h) (_n i))
 
-data Name   = Name String deriving (Show)
-data Number = Number { _n :: Double } deriving (Show)
-data Normal = Normal Number Number Number deriving (Show)
-data Vertex = Vertex Number Number Number deriving (Show)
-data Facet  = Facet Normal (Vertex, Vertex, Vertex) deriving (Show)
-data STL    = STL Name [Facet] deriving (Show)
+newtype Name   = Name String deriving (Show)
+newtype Number = Number { _n :: Double } deriving (Show)
+data Normal    = Normal Number Number Number deriving (Show)
+data Vertex    = Vertex Number Number Number deriving (Show)
+data Facet     = Facet Normal (Vertex, Vertex, Vertex) deriving (Show)
+data STL       = STL Name [Facet] deriving (Show)
 
 (<++>) a b = (++) <$> a <*> b
 (<:>) a b  = (:) <$> a <*> b
@@ -37,9 +37,7 @@ parseName = do
               return $ Name x
 
 parseNumber :: Parser Number
-parseNumber = do
-                x <- float
-                return $ Number (read x)
+parseNumber = Number . read <$> float
 
 parseNormal :: Parser Normal
 parseNormal = do
@@ -49,8 +47,7 @@ parseNormal = do
                 many1 whitespace
                 y <- parseNumber
                 many1 whitespace
-                z <- parseNumber
-                return $ Normal x y z
+                Normal x y <$> parseNumber
 
 parseVertex :: Parser Vertex
 parseVertex = do
@@ -60,8 +57,7 @@ parseVertex = do
                 many1 whitespace
                 y <- parseNumber
                 many1 whitespace
-                z <- parseNumber
-                return $ Vertex x y z
+                Vertex x y <$> parseNumber
 
 parseFacet :: Parser Facet
 parseFacet = do

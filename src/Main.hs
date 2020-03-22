@@ -15,7 +15,7 @@ stlResult stl = parse parseSTL "(stdin)" (T.unpack stl)
 stlToPbm :: T.Text -> T.Text
 stlToPbm stl = T.pack $ parseResult (stlResult stl)
   where
-    cp                             = Vector (-10.0) (-10.0) (-10.0)
+    cp                             = Vector (-5.0) (5.0) (-5.0)
     camera                         = Camera cp (norm $ mempty |-| cp) (Screen 640 480)
     gs                             = parse parseSTL "(stdin)" (T.unpack stl)
     parseResult (Right (STL _ gs)) = render camera (fmap stlCoerce gs)

@@ -1,6 +1,6 @@
 module Geometry where
 
-import Data.Maybe
+import Data.List
 import Vector
 
 -- | Line. First argument is some point on the line. Second argument is a direction vector of the line.
@@ -22,22 +22,26 @@ instance (Floating a) => Norm (Plane a) where
   -- Normal vector is normalized..
   norm (Plane s d) = Plane s (norm d)
 
-data Intersection f a = Inter { getInter :: Maybe (f a, Vector a) }
+newtype Intersection f a = Inter { getInter :: Maybe (f a, a, Vector a) } deriving Eq
+
+instance (Ord a, Eq (f a)) => Ord (Intersection f a) where
+  compare _ (Inter Nothing) = LT
+  compare (Inter Nothing) _ = GT
+  compare (Inter (Just (_, a, _))) (Inter (Just (_, b, _))) = compare a b
 
 class Intersect f where
-  intersection  :: (Floating a, Eq a, Ord a) => Line a ->  f a  -> Intersection f a
-  intersections :: (Floating a, Eq a, Ord a) => Line a -> [f a] -> [(f a, Vector a)]
+  setIntersection :: (Floating a) => f a -> Vector a -> Vector a -> Intersection f a
+  intersection    :: (Floating a, Eq a, Ord a) => Line a ->  f a  -> Intersection f a
+  nearestHit      :: (Floating a, Eq a, Ord a, Eq (f a)) => Line a -> [f a] -> Intersection f a
 
-  intersections ray gs = concatMap toA traces
-    where traces               = fmap (intersection ray) gs
-          toA (Inter (Just a)) = [a]
-          toA (Inter Nothing)  = []
+  setIntersection geometry source target = Inter $ Just (geometry, distance source target, target)
+  nearestHit ray gs = minimum (fmap (intersection ray) gs)
 
 instance Intersect Plane where
   -- | Intersection of ray and plane.
-  intersection ray plane
+  intersection ray@(Line source _) plane
             | s == 0    = Inter Nothing
-            | t > 0     = Inter $ Just (plane, a |+| b |* t)
+            | t > 0     = setIntersection plane source (a |+| b |* t)
             | otherwise = Inter Nothing
             where (Line a b)  = norm ray
                   (Plane c d) = norm plane
@@ -46,13 +50,13 @@ instance Intersect Plane where
 
 instance Intersect Triangle where
   -- | Intersection of ray and triangle.
-  intersection ray triangle@(Triangle a b c)
+  intersection ray@(Line source _) triangle@(Triangle a b c)
             | _a == 0   = Inter Nothing
             | u < 0     = Inter Nothing
             | u > 1     = Inter Nothing
             | v < 0     = Inter Nothing
             | u + v > 1 = Inter Nothing
-            | t > 0     = Inter $ Just (triangle, s |+| d |* t)
+            | t > 0     = setIntersection triangle source (s |+| d |* t)
             | otherwise = Inter Nothing
             where (Line s d) = norm ray
                   edge1      = b |-| a
