@@ -2,16 +2,48 @@ module Main where
 
 import System.Environment
 import System.IO
+import Text.ParserCombinators.Parsec
 import Vector
 import Geometry
 import Camera
 import PBM
+import STL
 
-camera    = Camera (Vector 0 5 0) (Vector 1 (-1) 1) (Screen 640 480)
-triangle1 = Triangle (Vector 1 0 1) (Vector 2 0 5) (Vector 5 0 2)
-triangle2 = Triangle (Vector 1 0 1) (Vector 4 0 7) (Vector 7 0 4)
-gs        = [triangle1, triangle2]
-pbm       = render camera gs
+stlExampleString = "solid cube_corner\n\
+\  facet normal 0.0 -1.0 0.0\n\
+\    outer loop\n\
+\      vertex 0.0 0.0 0.0\n\
+\      vertex 1.0 0.0 0.0\n\
+\      vertex 0.0 0.0 1.0\n\
+\    endloop\n\
+\  endfacet\n\
+\  facet normal 0.0 0.0 -1.0\n\
+\    outer loop\n\
+\      vertex 0.0 0.0 0.0\n\
+\      vertex 0.0 1.0 0.0\n\
+\      vertex 1.0 0.0 0.0\n\
+\    endloop\n\
+\  endfacet\n\
+\  facet normal -1.0 0.0 0.0\n\
+\    outer loop\n\
+\      vertex 0.0 0.0 0.0\n\
+\      vertex 0.0 0.0 1.0\n\
+\      vertex 0.0 1.0 0.0\n\
+\    endloop\n\
+\  endfacet\n\
+\  facet normal 0.577 0.577 0.577\n\
+\    outer loop\n\
+\      vertex 1.0 0.0 0.0\n\
+\      vertex 0.0 1.0 0.0\n\
+\      vertex 0.0 0.0 1.0\n\
+\    endloop\n\
+\  endfacet\n\
+\endsolid"
+
+cp     = Vector (-10.0) 0.0 0.0
+camera = Camera (Vector (-10.0) 0.0 0.0) (norm $ mempty |-| cp) (Screen 640 480)
+gs     = unwrap $ parse parseSTL "example" stlExampleString
+pbm    = render camera gs
 
 main :: IO ()
 main = do
