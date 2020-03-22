@@ -14,14 +14,14 @@ extra-source-files:  CHANGELOG.md
 
 executable raytracing
   main-is:             Main.hs
-  other-modules:       Camera, Geometry, Vector
+  other-modules:       Camera, PBM, Geometry, Vector
   build-depends:       base >=4.12 && <4.13
                      , groups
   hs-source-dirs:      src
   default-language:    Haskell2010
 
 library
-  exposed-modules:     Camera, Geometry, Vector
+  exposed-modules:     Camera, PBM, Geometry, Vector
   build-depends:       base >=4.12 && <4.13
                      , groups
   hs-source-dirs:      src

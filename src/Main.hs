@@ -5,6 +5,7 @@ import System.IO
 import Vector
 import Geometry
 import Camera
+import PBM
 
 camera    = Camera (Vector 0 5 0) (Vector 1 (-1) 1) (Screen 640 480)
 triangle1 = Triangle (Vector 1 0 1) (Vector 2 0 5) (Vector 5 0 2)
