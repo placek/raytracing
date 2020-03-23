@@ -1,16 +1,16 @@
-cabal-version:       >=1.10
+cabal-version:         >=1.10
 
-name:                raytracing
-version:             0.1.0.0
--- synopsis:
--- description:
--- bug-reports:
--- license:
-license-file:        LICENSE
-author:              Paweł Placzyński
-maintainer:          placzynski.pawel@gmail.com
-build-type:          Simple
-extra-source-files:  CHANGELOG.md
+name:                  raytracing
+version:               0.1.0.0
+synopsis:              Simple STL to PBM raytracer.
+description:           This is an example of raytracing. The main purpose of the app is to parse STL file and render result to PBM file.
+license:               MIT
+author:                Paweł Placzyński <placzynski.pawel@gmail.com>
+maintainer:            Paweł Placzyński <placzynski.pawel@gmail.com>
+build-type:            Simple
+
+-- license-file:          LICENSE
+-- extra-source-files:    CHANGELOG.md
 
 executable raytracing
   main-is:             Main.hs
@@ -23,8 +23,19 @@ executable raytracing
   default-language:    Haskell2010
 
 library
-  exposed-modules:     STL, Camera, PBM, Geometry, Vector
+  hs-source-dirs:      src
   build-depends:       base >=4.12 && <4.13
                      , groups
                      , parsec
-  hs-source-dirs:      src
+  exposed-modules:     STL, Camera, PBM, Geometry, Vector
+
+test-suite spec
+  type:                exitcode-stdio-1.0
+  main-is:             Spec.hs
+  hs-source-dirs:      spec
+  build-depends:       base >=4.12 && <4.13
+                     , hspec ==2.*
+                     , raytracing
+  other-modules:       VectorSpec
+  default-language:    Haskell2010
+  build-tool-depends:  hspec-discover:hspec-discover == 2.*
