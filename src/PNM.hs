@@ -3,7 +3,15 @@ module PNM where
 import qualified Data.Text as T
 import Text.Wrap
 import Geometry
+import Vector
 import Screen
+
+grayScale :: (Fractional a, Ord a) => Vector a -> a
+grayScale vector = r + g + b
+  where v = cutoff vector
+        r = 0.3  * _x v
+        g = 0.59 * _y v
+        b = 0.11 * _z v
 
 -- | PNM structure.
 data PNM a = PNM { pnmScreen :: Screen
@@ -21,6 +29,9 @@ class PNMPixel a where
 
 instance PNMPixel Int where
   pnmPixel a = T.pack . show $ min 0xFF a
+
+instance (RealFrac a, Ord a) => PNMPixel (Vector a) where
+  pnmPixel = T.pack . show . floor . grayScale
 
 instance PNMPixel (Intersection f a) where
   pnmPixel (Inter Nothing) = T.pack "50"
