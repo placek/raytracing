@@ -30,7 +30,7 @@ hits camera gs = fmap (`nearestHit` gs) (rays camera)
 
 -- | Render scene basing on geometries and the camera.
 render :: (Intersect f, Floating a, Enum a, Ord a, Show a, Eq (f a)) => Camera a -> [f a] -> String
-render camera@(Camera _ _ screen) gs = show $ PBM screen (hits camera gs)
+render camera@(Camera _ _ screen) gs = show $ PNM P1 screen (hits camera gs)
 
 -- Phong model
 -- light_color = ambient_color
