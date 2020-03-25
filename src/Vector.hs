@@ -59,6 +59,12 @@ magnitude a = sqrt $ dot a a
 distance :: (Floating a) => Vector a -> Vector a -> a
 distance a b = magnitude $ a |-| b
 
+-- | Reflection.
+reflect :: (Floating a) => Vector a -> Vector a -> Vector a
+reflect normal vector = 2 * dot v n *| n |-| v
+  where v = norm vector
+        n = norm normal
+
 class Norm a where
   norm :: a -> a
 
