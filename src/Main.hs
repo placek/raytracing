@@ -7,6 +7,7 @@ import           Vector
 import           Geometry
 import           Camera
 import           PBM
+import           Screen
 import           STL
 
 stlResult :: T.Text -> Either ParseError STL
@@ -15,7 +16,7 @@ stlResult stl = parse parseSTL "(stdin)" (T.unpack stl)
 stlToPbm :: T.Text -> T.Text
 stlToPbm stl = T.pack $ parseResult (stlResult stl)
   where
-    cp                             = Vector (-5.0) (5.0) (-5.0)
+    cp                             = Vector (-5.0) 5.0 (-5.0)
     camera                         = Camera cp (norm $ mempty |-| cp) (Screen 640 480)
     gs                             = parse parseSTL "(stdin)" (T.unpack stl)
     parseResult (Right (STL _ gs)) = render camera (fmap stlCoerce gs)

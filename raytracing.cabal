@@ -14,7 +14,7 @@ build-type:            Simple
 
 executable raytracing
   main-is:             Main.hs
-  other-modules:       STL, Camera, PBM, Geometry, Vector
+  other-modules:       STL, Screen, Camera, PBM, Geometry, Vector
   build-depends:       base >=4.12 && <4.13
                      , groups
                      , parsec
@@ -27,7 +27,7 @@ library
   build-depends:       base >=4.12 && <4.13
                      , groups
                      , parsec
-  exposed-modules:     STL, Camera, PBM, Geometry, Vector
+  exposed-modules:     STL, Screen, Camera, PBM, Geometry, Vector
 
 test-suite spec
   type:                exitcode-stdio-1.0

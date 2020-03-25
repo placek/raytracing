@@ -3,6 +3,7 @@ module Camera where
 import Data.Maybe
 import Vector
 import Geometry
+import Screen
 import PBM
 
 -- | Camera. First argument is position, second one is direction.
