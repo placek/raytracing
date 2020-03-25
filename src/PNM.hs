@@ -5,11 +5,8 @@ import Text.Wrap
 import Geometry
 import Screen
 
-data PNMHeader = P2 deriving Show
-
 -- | PNM structure.
-data PNM a = PNM { pnmHeader :: PNMHeader
-                 , pnmScreen :: Screen
+data PNM a = PNM { pnmScreen :: Screen
                  , pnmData   :: [a]
                  }
 
@@ -31,7 +28,7 @@ instance PNMPixel (Intersection f a) where
 
 instance (PNMPixel a) => Show (PNM a) where
   show pnm = unlines [header, size, maxPx, body]
-    where header = show . pnmHeader $ pnm
+    where header = "P2"
           size   = show . pnmScreen $ pnm
           maxPx  = show 0xFF
           body   = T.unpack . pnmString $ pnm
