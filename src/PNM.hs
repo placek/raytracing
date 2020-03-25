@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances #-}
 module PNM where
 
 import qualified Data.Text as T
@@ -30,8 +31,9 @@ class PNMPixel a where
 instance PNMPixel Int where
   pnmPixel a = T.pack . show $ min 0xFF a
 
-instance (RealFrac a, Ord a) => PNMPixel (Vector a) where
-  pnmPixel = T.pack . show . floor . grayScale
+instance (RealFrac a, Ord a) => PNMPixel (Maybe (Vector a)) where
+  pnmPixel (Just v) = T.pack . show . floor . (*255) . grayScale $ v
+  pnmPixel Nothing  = T.pack "32"
 
 instance PNMPixel (Intersection f a) where
   pnmPixel (Inter Nothing) = T.pack "50"

@@ -22,6 +22,10 @@ instance (Floating a) => Norm (Plane a) where
   -- Normal vector is normalized..
   norm (Plane s d) = Plane s (norm d)
 
+normal (Triangle a b c) = cross edge1 edge2
+  where edge1 = b |-| a
+        edge2 = c |-| b
+
 newtype Intersection f a = Inter { getInter :: Maybe (f a, a, Vector a) } deriving Eq
 
 instance (Ord a, Eq (f a)) => Ord (Intersection f a) where
