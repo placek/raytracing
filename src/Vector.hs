@@ -65,6 +65,10 @@ reflect normal vector = 2 * dot v n *| n |-| v
   where v = norm vector
         n = norm normal
 
+-- | Cutoff components at 1.0.
+cutoff :: (Fractional a, Ord a) => Vector a -> Vector a
+cutoff = fmap (min 1.0)
+
 class Norm a where
   norm :: a -> a
 

@@ -5,11 +5,10 @@ import Text.Wrap
 import Geometry
 import Screen
 
-data PNMHeader = P2 | P3 deriving Show
+data PNMHeader = P2 deriving Show
 
 -- | PNM structure.
 data PNM a = PNM { pnmHeader :: PNMHeader
-                 , pnmMax    :: Int
                  , pnmScreen :: Screen
                  , pnmData   :: [a]
                  }
@@ -18,18 +17,21 @@ data PNM a = PNM { pnmHeader :: PNMHeader
 pnmString :: (PNMPixel a) => PNM a -> T.Text
 pnmString pnm = wrapText (WrapSettings False False) 70 result
   where result  = T.intercalate (T.pack " ") pixels
-        pixels  = fmap (pnmPixel (pnmMax pnm)) (pnmData pnm)
+        pixels  = fmap pnmPixel (pnmData pnm)
 
 class PNMPixel a where
-  pnmPixel :: Int -> a -> T.Text
+  pnmPixel :: a -> T.Text
+
+instance PNMPixel Int where
+  pnmPixel a = T.pack . show $ min 0xFF a
 
 instance PNMPixel (Intersection f a) where
-  pnmPixel mp (Inter Nothing) = T.pack "0"
-  pnmPixel mp _               = T.pack . show $ max mp 65535
+  pnmPixel (Inter Nothing) = T.pack "50"
+  pnmPixel _               = T.pack "200"
 
 instance (PNMPixel a) => Show (PNM a) where
   show pnm = unlines [header, size, maxPx, body]
     where header = show . pnmHeader $ pnm
           size   = show . pnmScreen $ pnm
-          maxPx  = show . pnmMax $ pnm
+          maxPx  = show 0xFF
           body   = T.unpack . pnmString $ pnm
