@@ -4,7 +4,7 @@ import Data.Maybe
 import Vector
 import Geometry
 import Screen
-import PBM
+import PNM
 
 -- | Camera. First argument is position, second one is direction.
 data Camera a = Camera (Vector a) (Vector a) Screen deriving (Eq, Show)

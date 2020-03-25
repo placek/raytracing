@@ -1,4 +1,4 @@
-module PBM where
+module PNM where
 
 import Geometry
 import Screen

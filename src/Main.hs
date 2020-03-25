@@ -6,7 +6,7 @@ import           Text.ParserCombinators.Parsec
 import           Vector
 import           Geometry
 import           Camera
-import           PBM
+import           PNM
 import           Screen
 import           STL
 
