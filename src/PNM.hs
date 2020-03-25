@@ -1,5 +1,7 @@
 module PNM where
 
+import qualified Data.Text as T
+import Text.Wrap
 import Geometry
 import Screen
 
@@ -7,23 +9,20 @@ import Screen
 data PBM a = PBM Screen [a]
 
 class PNM a where
-  pnmString :: [a] -> String
-
-instance PNM [a] where
-  -- | Conversion of data to PBM values.
-  pnmString = concatMap toPixel
-    where toPixel [] = "0 "
-          toPixel _  = "1 "
+  pnmPixel :: a -> T.Text
+  pnmString :: [a] -> T.Text
 
 instance PNM (Intersection f a) where
   -- | Conversion of data to PBM values.
-  pnmString = concatMap toPixel
-    where toPixel (Inter Nothing) = "0 "
-          toPixel _               = "1 "
+  pnmString components = wrapText (WrapSettings False False) 70 pnmData
+    where pnmData = T.intercalate (T.pack " ") pixels
+          pixels  = fmap pnmPixel components
+
+  pnmPixel (Inter Nothing) = T.pack "0"
+  pnmPixel _               = T.pack "1"
 
 instance (PNM a) => Show (PBM a) where
-  show (PBM screen hs) = unlines $ [header, size] ++ pbmData
+  show (PBM screen hs) = unlines $ [header, size] ++ [pbmData]
     where header  = "P1"
           size    = show screen
-          pbmData = slice 70 (pnmString hs)
-          slice n = takeWhile (not.null) . map (take n) . iterate (drop n)
+          pbmData = T.unpack $ pnmString hs
