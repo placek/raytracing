@@ -13,14 +13,17 @@ data PNM a = PNM { pnmHeader :: PNMHeader
                  , pnmData :: [a]
                  }
 
-class PNMPixel a where
-  pnmPixel  :: a -> T.Text
-  pnmString :: [a] -> T.Text
+-- | Conversion of PNM data to string.
+pnmString :: (PNMPixel a) => PNM a -> T.Text
+pnmString pnm = wrapText (WrapSettings False False) 70 result
+  where result  = T.intercalate (T.pack " ") pixels
+        pixels  = fmap pnmPixel (pnmData pnm)
 
-  -- | Conversion of data to PBM values.
-  pnmString components = wrapText (WrapSettings False False) 70 pnmData
-    where pnmData = T.intercalate (T.pack " ") pixels
-          pixels  = fmap pnmPixel components
+class PNMPixel a where
+  pnmPixel :: a -> T.Text
+
+instance PNMPixel Int where
+  pnmPixel = T.pack . show
 
 instance PNMPixel (Intersection f a) where
   pnmPixel (Inter Nothing) = T.pack "0"
@@ -30,4 +33,4 @@ instance (PNMPixel a) => Show (PNM a) where
   show pnm = unlines $ [header, size, body]
     where header = show . pnmHeader $ pnm
           size   = show . pnmScreen $ pnm
-          body   = T.unpack . pnmString . pnmData $ pnm
+          body   = T.unpack . pnmString $ pnm
