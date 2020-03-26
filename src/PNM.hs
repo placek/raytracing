@@ -32,8 +32,11 @@ instance PNMPixel Int where
   pnmPixel a = T.pack . show $ min 0xFF a
 
 instance (RealFrac a, Ord a) => PNMPixel (Maybe (Vector a)) where
-  pnmPixel (Just v) = T.pack . show . floor . (*255) . grayScale $ v
-  pnmPixel Nothing  = T.pack "32"
+  pnmPixel (Just (Vector a b c)) = T.intercalate (T.pack " ") [x, y, z]
+    where x = T.pack . show . floor . (*255) $ a
+          y = T.pack . show . floor . (*255) $ b
+          z = T.pack . show . floor . (*255) $ c
+  pnmPixel Nothing  = T.pack $ show 0x65 ++ " " ++ show 0x7b ++ " " ++ show 0x83
 
 instance PNMPixel (Intersection f a) where
   pnmPixel (Inter Nothing) = T.pack "50"
@@ -41,7 +44,7 @@ instance PNMPixel (Intersection f a) where
 
 instance (PNMPixel a) => Show (PNM a) where
   show pnm = unlines [header, size, maxPx, body]
-    where header = "P2"
+    where header = "P3"
           size   = show . pnmScreen $ pnm
           maxPx  = show 0xFF
           body   = T.unpack . pnmString $ pnm
