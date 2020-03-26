@@ -1,4 +1,4 @@
-module Camera where
+module Camera (Camera(..), Light(..), render) where
 
 import Data.Maybe
 import Vector
@@ -16,7 +16,7 @@ data Light a = Light (Vector a) (Vector a) (Vector a) (Vector a)
 targetPoints :: (Floating a, Enum a) => Camera a -> [Vector a]
 targetPoints (Camera s d (Screen width height)) = fmap (|+| middlepoint) coords
   where middlepoint = s |+| d
-        left        = norm $ cross d (Vector 0 1 0)
+        left        = norm $ cross d (Vector 0 0 1)
         up          = norm $ cross d left
         step        = 2.0 / fromIntegral width
         hX          = fromIntegral height * step
@@ -31,10 +31,6 @@ rays camera@(Camera s _ _) = fmap (\t -> Line s (t |-| s)) (targetPoints camera)
 hits :: (Intersect f, Floating a, Enum a, Ord a, Eq (f a)) => Camera a -> [f a] -> [Intersection f a]
 hits camera gs = fmap (`nearestHit` gs) (rays camera)
 
--- | Render scene basing on geometries and the camera.
-render :: (Floating a, RealFrac a, Enum a, Ord a, Show a) => Camera a -> Light a -> [Triangle a] -> String
-render camera@(Camera _ _ screen) light gs = show $ PNM screen (fmap (lightColor camera light) (hits camera gs))
-
 -- | Phong model
 lightColor :: (Floating a, Ord a) => Camera a -> Light a -> Intersection Triangle a -> Maybe (Vector a)
 lightColor _              _                    (Inter Nothing)          = Nothing
@@ -46,4 +42,8 @@ lightColor (Camera c _ _) (Light source a d s) (Inter (Just (g, _, p))) = Just .
         light     = norm $ p |-| source
         reflected = reflect gNormal light
         camera    = norm $ p |-| c
-        shinyness = 0.4
+        shinyness = 0.2
+
+-- | Render scene basing on geometries and the camera.
+render :: (Floating a, RealFrac a, Enum a, Ord a, Show a) => Camera a -> Light a -> [Triangle a] -> String
+render camera@(Camera _ _ screen) light gs = show $ PNM screen (fmap (lightColor camera light) (hits camera gs))
