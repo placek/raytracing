@@ -59,6 +59,14 @@ magnitude a = sqrt $ dot a a
 distance :: (Floating a) => Vector a -> Vector a -> a
 distance a b = magnitude $ a |-| b
 
+-- | Same side of the line segment. Returns +True+ if +p1+ and +p2+ are on the same side od line segment +a+ +b+.
+sameSide :: (Num a, Ord a) => Vector a -> Vector a -> Vector a -> Vector a -> Bool
+sameSide p1 p2 a b
+       | dot cp1 cp2 >= 0 = True
+       | otherwise        = False
+       where cp1 = cross (b |-| a) (p1 |-| a)
+             cp2 = cross (b |-| a) (p2 |-| a)
+
 -- | Reflection.
 reflect :: (Floating a) => Vector a -> Vector a -> Vector a
 reflect normal vector = 2 * dot v n *| n |-| v

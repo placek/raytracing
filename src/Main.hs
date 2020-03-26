@@ -17,7 +17,7 @@ stlToPbm :: T.Text -> T.Text
 stlToPbm stl = T.pack $ parseResult (stlResult stl)
   where
     cp                             = Vector (-4.0) 4.0 (-4.0)
-    camera                         = Camera cp (norm $ (Vector 2.0 0.0 7.0) |-| cp) (Screen 640 480)
+    camera                         = Camera cp (norm $ Vector 2.0 0.0 7.0 |-| cp) (Screen 640 480)
     white                          = Vector 1.0 1.0 1.0
     gray                           = Vector 0.1 0.1 0.1
     light                          = Light (Vector 5.0 5.0 5.0) gray white white

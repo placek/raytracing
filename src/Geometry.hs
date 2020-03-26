@@ -28,6 +28,8 @@ normal (Triangle a b c) = cross edge1 edge2
 
 newtype Intersection f a = Inter { getInter :: Maybe (f a, a, Vector a) } deriving Eq
 
+getVector (Inter (Just (_, _, a))) = a
+
 instance (Ord a, Eq (f a)) => Ord (Intersection f a) where
   compare _ (Inter Nothing) = LT
   compare (Inter Nothing) _ = GT
@@ -44,30 +46,19 @@ class Intersect f where
 instance Intersect Plane where
   -- | Intersection of ray and plane.
   intersection ray@(Line source _) plane
-            | s == 0    = Inter Nothing
-            | t > 0     = setIntersection plane source (a |+| b |* t)
-            | otherwise = Inter Nothing
-            where (Line a b)  = norm ray
-                  (Plane c d) = norm plane
-                  s           = dot b d
-                  t           = dot (c |-| a) d / s
+             | s == 0    = Inter Nothing
+             | t > 0     = setIntersection plane source (a |+| b |* t)
+             | otherwise = Inter Nothing
+             where (Line a b)  = norm ray
+                   (Plane c d) = norm plane
+                   s           = dot b d
+                   t           = dot (c |-| a) d / s
 
 instance Intersect Triangle where
   -- | Intersection of ray and triangle.
   intersection ray@(Line source _) triangle@(Triangle a b c)
-            | _a == 0   = Inter Nothing
-            | u < 0     = Inter Nothing
-            | u > 1     = Inter Nothing
-            | v < 0     = Inter Nothing
-            | u + v > 1 = Inter Nothing
-            | t > 0     = setIntersection triangle source (s |+| d |* t)
-            | otherwise = Inter Nothing
-            where (Line s d) = norm ray
-                  edge1      = b |-| a
-                  edge2      = c |-| a
-                  h          = cross d edge2
-                  _a         = dot h edge1
-                  u          = dot (s |-| a) h / _a
-                  q          = cross (s |-| a) edge1
-                  v          = dot d q / _a
-                  t          = dot edge2 q / _a
+             | condition point = setIntersection triangle source (getVector point)
+             | otherwise       = Inter Nothing
+             where point                              = intersection ray (Plane a (normal triangle))
+                   condition (Inter (Just (_, _, p))) = sameSide p a b c && sameSide p b a c && sameSide p c a b
+                   condition (Inter Nothing)          = False
