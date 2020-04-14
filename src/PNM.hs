@@ -32,10 +32,8 @@ instance PNMPixel Int where
   pnmPixel a = T.pack . show $ min 0xFF a
 
 instance (RealFrac a, Ord a) => PNMPixel (Maybe (Vector a)) where
-  pnmPixel (Just (Vector a b c)) = T.intercalate (T.pack " ") [x, y, z]
-    where x = T.pack . show . floor . (*255) $ a
-          y = T.pack . show . floor . (*255) $ b
-          z = T.pack . show . floor . (*255) $ c
+  pnmPixel (Just vector) = T.intercalate (T.pack " ") (fmap (T.pack . show) [_x v, _y v, _z v])
+    where v = fmap (floor . (*0xFF)) vector
   pnmPixel Nothing  = T.pack $ show 0x65 ++ " " ++ show 0x7b ++ " " ++ show 0x83
 
 instance PNMPixel (Intersection f a) where
