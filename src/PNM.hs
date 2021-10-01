@@ -21,7 +21,7 @@ data PNM a = PNM { pnmScreen :: Screen
 
 -- | Conversion of PNM data to string.
 pnmString :: (PNMPixel a) => PNM a -> T.Text
-pnmString pnm = wrapText (WrapSettings False False) 70 result
+pnmString pnm = wrapText defaultWrapSettings 70 result
   where result  = T.intercalate (T.pack " ") pixels
         pixels  = fmap pnmPixel (pnmData pnm)
 
